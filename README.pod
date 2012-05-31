@@ -1,0 +1,44 @@
+=encoding UTF-8
+
+=head1 NAME
+
+Mojolicious::Plugin::Email - It is a Mojolicious Plugin for sending emails
+
+=head1 SYNOPSIS
+
+    # register plugin in your application 
+    $self->plugin(Email => { from => '"Administrator" admin@yourdomain.com' });
+
+    # use it in your controller
+    $self->email(
+        header => [
+            To      => '"Some Name" <some.email@adomain.com>',
+            Subject => "Subject",
+        ],
+        transport => Email::Sender::Transport::SMTP::TLS->new(
+            host     => 'smtp_server',
+            username => 'username',
+            password => 'password',
+            port     =>  port,
+        ),
+        data => [
+            template => 'email/template_name',
+            info     => 'Some usefull data you need in your template'
+        ],
+        content_type => 'text/html',
+        charset      => 'utf8',
+        encoding     => '8bit',
+        format       => 'email',
+    );
+
+
+    # Your email template "path/to/your/mojolicious-app/templates/email/template_name.email.ep":
+    % layout 'email/default';
+
+    <p><%= $data->{info} %></p>
+
+    # The default email layout "path/to/your/mojolicious-app/templates/layouts/email/default.email.ep":
+    <html>
+        <head><title></title></head>
+        <body><%= content %></body>
+    </html>
