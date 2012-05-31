@@ -23,7 +23,7 @@ Mojolicious::Plugin::Email - It is a Mojolicious Plugin for sending emails
         ),
         data => [
             template => 'email/template_name',
-            info     => 'Some usefull data you need in your template'
+            info     => 'Some useful data you need in your template'
         ],
         content_type => 'text/html',
         charset      => 'utf8',
@@ -42,3 +42,22 @@ Mojolicious::Plugin::Email - It is a Mojolicious Plugin for sending emails
         <head><title></title></head>
         <body><%= content %></body>
     </html>
+    
+
+=head1 VERSION
+ 
+Version 0.03
+
+
+=head1 AUTHOR
+
+Raul Matei <raulmatei@cpan.org>
+
+
+=head1 COPYRIGHT AND LICENCE
+
+Copyright (C) 2012 by Raul Matei
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
