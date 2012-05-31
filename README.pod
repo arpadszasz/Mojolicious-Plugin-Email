@@ -51,7 +51,7 @@ Version 0.03
 
 =head1 AUTHOR
 
-Raul Matei <raulmatei@cpan.org>
+Raul Matei L<mailto:raulmatei@cpan.org>
 
 
 =head1 COPYRIGHT AND LICENCE
