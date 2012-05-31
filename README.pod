@@ -2,12 +2,12 @@
 
 =head1 NAME
 
-Mojolicious::Plugin::Email - It is a Mojolicious Plugin for sending emails
+Mojolicious::Plugin::Email - It's a Mojolicious Plugin for sending emails (a work in progress).
 
 =head1 SYNOPSIS
 
     # register plugin in your application 
-    $self->plugin(Email => { from => '"Administrator" admin@yourdomain.com' });
+    $self->plugin(Email => { from => '"Administrator" <admin@yourdomain.com>' });
 
     # use it in your controller
     $self->email(
@@ -32,14 +32,16 @@ Mojolicious::Plugin::Email - It is a Mojolicious Plugin for sending emails
     );
 
 
-    # Your email template "path/to/your/mojolicious-app/templates/email/template_name.email.ep":
+    # Your email template "templates/email/template_name.email.ep":
     % layout 'email/default';
+    % title 'Subject';
 
     <p><%= $data->{info} %></p>
 
-    # The default email layout "path/to/your/mojolicious-app/templates/layouts/email/default.email.ep":
+
+    # The default email layout "templates/layouts/email/default.email.ep":
     <html>
-        <head><title></title></head>
+        <head><title><%= title %></title></head>
         <body><%= content %></body>
     </html>
     
