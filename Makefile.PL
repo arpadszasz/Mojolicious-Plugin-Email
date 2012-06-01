@@ -11,7 +11,7 @@ WriteMakefile(
      'Mojolicious' => '2.60',
      'Email::MIME' => '1.910',
      'Email::Sender::Simple' => '0.110005',
-     'Email::Sender::Transport::Sendmail' => '0.110005',
+     'Email::Sender::Transport::Test' => '0.110005',
   },
   test         => {TESTS => 't/*.t'}
 );
