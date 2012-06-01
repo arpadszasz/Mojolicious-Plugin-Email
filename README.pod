@@ -7,7 +7,10 @@ Mojolicious::Plugin::Email - It's a Mojolicious Plugin for sending emails (a wor
 =head1 SYNOPSIS
 
     # register plugin in your application 
-    $self->plugin(Email => { from => '"Administrator" <admin@yourdomain.com>' });
+    $self->plugin(Email => { 
+            from      => '"Administrator" <admin@yourdomain.com>', 
+            transport => Email::Sender::Transport::Sendmail->new('/path/to/sendmail'),
+    });
 
     # use it in your controller
     $self->email(
