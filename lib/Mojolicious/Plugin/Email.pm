@@ -6,60 +6,65 @@ use warnings;
 
 use Email::MIME;
 use Email::Sender::Simple;
-use Email::Sender::Transport::Sendmail;
+use Email::Sender::Transport::Test;
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 sub register {
-    my ($self, $app, $conf) = @_;
+  my ($self, $app, $conf) = @_;
 
-    $app->helper(
-        email => sub {
-            my $self = shift;
-            my $args = @_ ? { @_ } : return;
+  $app->helper(
+    email => sub {
+      my $self = shift;
+      my $args = @_ ? { @_ } : return;
 
-            my $sendmail = $args->{sendmail} ? $args->{sendmail} : '/usr/sbin/sendmail';
+      my @data   = @{ $args->{data} };
+      my @parts = Email::MIME->create(
+                    body => $self->render_partial(
+                                        @data,
+                                        format => $args->{format}
+                                                ? $args->{format}
+                                                : 'email'
+                                  )
+                  );
 
-            my @data   = @{ $args->{data} };
+      my $transport = defined $args->{transport} || $conf->{transport}
+                      ? $args->{transport} || $conf->{transport}
+                      : undef;
 
-            my @parts = Email::MIME->create(
-                            body => $self->render_partial(
-                                                    @data,
-                                                    format => $args->{format}
-                                                            ? $args->{format}
-                                                            : 'email'
-                                    ),
-                        );
+      my $header = { @{ $args->{header} } };
 
-            my $transport = defined $args->{transport}
-                            ? $args->{transport}
-                            : Email::Sender::Transport::Sendmail->new({ sendmail => $sendmail });
+      $header->{From}    ||= $conf->{from};
+      $header->{Subject} ||= $self->stash('title');
 
-            my $header = { @{ $args->{header} } };
+      my @header = %{$header};
 
-            $header->{From}    ||= $conf->{from};
-            $header->{Subject} ||= $self->stash('title');
+      my $email = Email::MIME->create(
+                    header => \@header,
+                    parts  => \@parts,
+                  );
 
-            my @header = %{$header};
+      $email->charset_set     ( $args->{charset}      ? $args->{charset}      : 'utf8'      );
+      $email->encoding_set    ( $args->{encoding}     ? $args->{encoding}     : 'base64'    );
+      $email->content_type_set( $args->{content_type} ? $args->{content_type} : 'text/html' );
 
-            my $email = Email::MIME->create(
-                            header => \@header,
-                            parts  => \@parts,
-                        );
+      return Email::Sender::Simple->try_to_send( $email, { transport => $transport } ) if $transport;
 
-            $email->charset_set     ( $args->{charset}      ? $args->{charset}      : 'utf8'      );
-            $email->encoding_set    ( $args->{encoding}     ? $args->{encoding}     : 'base64'    );
-            $email->content_type_set( $args->{content_type} ? $args->{content_type} : 'text/html' );
+      my $emailer = Email::Sender::Transport::Test->new;
+      $emailer->send_email(
+                  $email,
+                  {
+                    to   => [ $header->{To} ],
+                    from =>   $header->{From}
+                  }
+              );
+      return unless $emailer->{deliveries}->[0]->{successes}->[0];
 
-            my $emailer = Email::Sender::Simple->try_to_send( $email, { transport => $transport } );
+    }
+  );
 
-            # If message is sent successfully it will return a true value,
-            # if an error ocurred it will return an Email::Sender::Failure object.
-            return $emailer; 
-        }
-    );
 }
 
 1;
