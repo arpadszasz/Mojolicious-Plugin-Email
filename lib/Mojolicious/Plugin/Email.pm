@@ -8,8 +8,7 @@ use Email::MIME;
 use Email::Sender::Simple;
 use Email::Sender::Transport::Test;
 
-
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 
 sub register {
@@ -20,7 +19,9 @@ sub register {
       my $self = shift;
       my $args = @_ ? { @_ } : return;
 
-      my @data   = @{ $args->{data} };
+
+      my @data  = @{ $args->{data} };
+
       my @parts = Email::MIME->create(
                     body => $self->render_partial(
                                         @data,
@@ -31,20 +32,18 @@ sub register {
                   );
 
       my $transport = defined $args->{transport} || $conf->{transport}
-                      ? $args->{transport} || $conf->{transport}
-                      : undef;
+                            ? $args->{transport} || $conf->{transport}
+                            : undef;
 
       my $header = { @{ $args->{header} } };
 
       $header->{From}    ||= $conf->{from};
       $header->{Subject} ||= $self->stash('title');
 
-      my @header = %{$header};
-
       my $email = Email::MIME->create(
-                    header => \@header,
-                    parts  => \@parts,
-                  );
+                                  header => [ %{$header} ],
+                                  parts  => [ @parts ],
+                              );
 
       $email->charset_set     ( $args->{charset}      ? $args->{charset}      : 'utf8'      );
       $email->encoding_set    ( $args->{encoding}     ? $args->{encoding}     : 'base64'    );
@@ -59,7 +58,7 @@ sub register {
                     to   => [ $header->{To} ],
                     from =>   $header->{From}
                   }
-              );
+                );
       return unless $emailer->{deliveries}->[0]->{successes}->[0];
 
     }
