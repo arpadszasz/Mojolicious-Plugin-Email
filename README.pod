@@ -15,9 +15,13 @@ Mojolicious::Plugin::Email - It's a Mojolicious Plugin for sending emails (a wor
     # use it in your controller
     $self->email(
         header => [
+            # if you set From here, it will overwrite the config 'from'
+            From    => '"Administrator" <admin@yourdomain.com>',
             To      => '"Some Name" <some.email@adomain.com>',
+            # this will overwrite the 'title' from email template
             Subject => "Subject",
         ],
+	# this will overwrite the config transport
         transport => Email::Sender::Transport::SMTP::TLS->new(
             host     => 'smtp_server',
             username => 'username',
